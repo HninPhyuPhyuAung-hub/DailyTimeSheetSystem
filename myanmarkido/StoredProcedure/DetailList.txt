@@ -1,0 +1,155 @@
+USE [myanmarkido]
+GO
+
+/****** Object:  StoredProcedure [dbo].[DetailList]    Script Date: 16/12/2019 09:31:57 ******/
+DROP PROCEDURE [dbo].[DetailList]
+GO
+
+/****** Object:  StoredProcedure [dbo].[DetailList]    Script Date: 16/12/2019 09:31:57 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE   PROCEDURE [dbo].[DetailList] 
+ @S date,
+ @E date,
+ @K varchar(50)
+
+
+AS
+
+BEGIN
+
+
+DECLARE @StartDate date;
+SELECT @StartDate =@S;
+DECLARE @EndDate date;
+SELECT @EndDate = @E;
+DECLARE @Keyword varchar(50);
+SELECT @Keyword =@K;
+
+
+
+IF (@Keyword is not null)
+
+BEGIN
+	
+   WITH first AS 
+(
+   SELECT 
+
+d.Name,
+d.Position,
+(CASE WHEN d.Revenuetype='Traveling' THEN SUM(d.Revenuehour) END )AS RTHour,
+(CASE WHEN d.Revenuetype='Actual working' THEN SUM(d.Revenuehour) END )AS RAHour,
+(CASE WHEN d.Revenuetype='Overtime' THEN SUM(d.Revenuehour) END )AS ROHour,
+(CASE WHEN d.Revenuetype='Preparation' THEN SUM(d.Revenuehour) END )AS RPHour,
+(CASE WHEN d.Revenuetype='Spent' THEN SUM(d.Revenuehour) END )AS RSHour,
+
+(CASE WHEN d.Maintenancetype='Traveling' THEN SUM(d.Maintenancehour) END )AS MTHour,
+(CASE WHEN d.Maintenancetype='Actual working' THEN SUM(d.Maintenancehour) END )AS MAHour,
+(CASE WHEN d.Maintenancetype='Overtime' THEN SUM(d.Maintenancehour) END )AS MOHour,
+(CASE WHEN d.Maintenancetype='Preparation' THEN SUM(d.Maintenancehour) END )AS MPHour,
+(CASE WHEN d.Maintenancetype='Spent' THEN SUM(d.Maintenancehour) END )AS MSHour,
+
+(CASE WHEN d.Warrantytype='Traveling' THEN SUM(d.WarrantyHour) END )AS WTHour,
+(CASE WHEN d.Warrantytype='Actual working' THEN SUM(d.WarrantyHour) END )AS WAHour,
+(CASE WHEN d.Warrantytype='Overtime' THEN SUM(d.WarrantyHour) END )AS WOHour,
+(CASE WHEN d.Warrantytype='Preparation' THEN SUM(d.WarrantyHour) END )AS WPHour,
+(CASE WHEN d.Warrantytype='Spent' THEN SUM(d.WarrantyHour) END )AS WSHour,
+
+(CASE WHEN d.Expensestype='Repair of Service Car' THEN SUM(d.Expenseshour) END )AS ECHour,
+(CASE WHEN d.Expensestype='Repair Service Tools' THEN SUM(d.Expenseshour) END )AS ETOHour,
+(CASE WHEN d.Expensestype='Rework' THEN SUM(d.Expenseshour) END )AS ERHour,
+(CASE WHEN d.Expensestype='Service Policy' THEN SUM(d.Expenseshour) END )AS EPHour,
+(CASE WHEN d.Expensestype='Training' THEN SUM(d.Expenseshour) END )AS ETRHour,
+(CASE WHEN d.Expensestype='Voluntary Visit' THEN SUM(d.Expenseshour) END )AS EVHour,
+(CASE WHEN d.Expensestype='Non Productive' THEN SUM(d.Expenseshour) END )AS ENHour,
+(CASE WHEN d.Expensestype='Traveling' THEN SUM(d.Expenseshour) END )AS ETHour,
+
+(CASE WHEN d.Expensestype='Paper Works' THEN SUM(d.Expenseshour) END )AS EPWHour,
+(CASE WHEN d.Expensestype='Leave' THEN SUM(d.Expenseshour) END )AS ELHour,
+(CASE WHEN d.Expensestype='Holiday' THEN SUM(d.Expenseshour) END )AS EHHour,
+(CASE WHEN d.Expensestype='Jobless' THEN SUM(d.Expenseshour) END )AS EJHour,
+(CASE WHEN d.Expensestype='Knowledge of service' THEN SUM(d.Expenseshour) END )AS EKHour,
+
+
+CONVERT(date,d.date) AS date
+
+FROM            dbo.dailyjob AS d 
+WHERE         	 CONVERT(date,d.date) >= @StartDate AND CONVERT(date,d.date)<= @EndDate 
+
+GROUP BY    d.Name,d.Position,d.Revenuetype,CONVERT(date,d.date),d.Maintenancetype,d.Warrantytype,d.Expensestype
+
+
+
+
+
+)
+SELECT    Name,Position,DATEFROMPARTS(Year(date),Month(date),01) AS Date,
+SUM(isnull(first.RAHour,0)) AS RAHour,SUM(isnull(first.ROHour,0)) AS ROHour,SUM(isnull(first.RPHour,0))AS RPHour ,
+SUM(isnull(first.RTHour,0)) AS RTHour,SUM(isnull(first.RSHour,0))AS RSHour,SUM(isnull(first.MAHour,0))AS MAHour,SUM(isnull(first.MOHour,0))AS MOHour,SUM(isnull(first.MPHour,0))AS MPHour,SUM(isnull(first.MTHour,0))AS MTHour,SUM(isnull(first.MSHour,0)) AS MSHour,
+SUM(isnull(first.WAHour,0))AS WAHour,SUM(isnull(first.WOHour,0))AS WOHour,SUM(isnull(first.WPHour,0))AS WPHour,SUM(isnull(first.WTHour,0)) AS WTHour,SUM(isnull(first.WSHour,0)) AS WSHour,
+SUM(isnull(first.ECHour,0))AS ECHour ,SUM(isnull(first.EHHour,0))AS EHHour,SUM(isnull(first.EJHour,0))AS EJHour,SUM(isnull(first.EKHour,0))AS EKHour,SUM(isnull(first.ELHour,0))AS ELHour,
+SUM(isnull(first.ENHour,0))AS ENHour,SUM(isnull(first.EPHour,0))AS EPHour, SUM(isnull(first.EPWHour,0)) AS EPWHour, SUM(isnull(first.ERHour,0))AS ERHour, SUM(isnull(first.ETOHour,0))AS ETOHour,
+SUM(isnull(first.ETRHour,0)) AS ETRHour, SUM(isnull(first.EVHour,0)) AS EVHour,
+SUM(isnull(first.ETHour,0))AS ETHour,
+SUM(isnull(first.RAHour,0)+isnull(first.ROHour,0)+isnull(first.RPHour,0)+isnull(first.RTHour,0)+isnull(first.RSHour,0)+isnull(first.MAHour,0)+isnull(first.MSHour,0)+
+isnull(first.MAHour,0)+isnull(first.MOHour,0)+isnull(first.MPHour,0)+isnull(first.MTHour,0)+isnull(first.MTHour,0)+isnull(first.WAHour,0)+isnull(first.WOHour,0)+
+isnull(first.WPHour,0)+isnull(first.WTHour,0)+isnull(first.WSHour,0)+isnull(first.ECHour,0)+isnull(first.EHHour,0)+isnull(first.EJHour,0)+isnull(first.EKHour,0)+isnull(first.ELHour,0)+
+isnull(first.ENHour,0)+isnull(first.EPHour,0)+isnull(first.EPWHour,0)+isnull(first.ETOHour,0)+isnull(first.ERHour,0)+isnull(first.ETRHour,0)+isnull(first.EVHour,0)
++isnull(first.ETHour,0)
+) AS Total
+  FROM         first
+    WHERE        (first.Name like '%' + @Keyword + '%')  OR  (first.Position like '%' + @Keyword + '%')  
+	GROUP BY	 Name,Position,DATEFROMPARTS(Year(date),Month(date),01)
+
+END
+
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+GO
+
+

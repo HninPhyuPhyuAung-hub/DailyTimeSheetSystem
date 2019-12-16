@@ -1,0 +1,457 @@
+﻿
+@section css{
+    <link href="~/Content/custom.css" rel="stylesheet" />
+}
+<div class="custom-card">
+    <div class="row">
+        <div class="col-md-offset-0">
+
+            <span class="v-bottom" style="font-size:18px;font-weight:500;color:#428af5; padding-right:1250px;">
+                <h1>Daily Time Sheet</h1>
+            </span>
+
+            <button id="addnotice" type="button" class="btn btn-primary btn-sm btn-rounded btnmain" style="background-color:#0000ff;border-color:#47d147;border-color:black" onclick="InsertLeave()" title="Add New"><i class="fa fa-plus"></i>Add New Daily Sheet</button>
+        </div>
+    </div>
+    <br />
+    <div class="container-fluid">
+        <table id="" class="leavedetail table table-bordered table-striped table-hover" width="100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Date</th>
+                    <th>Revenue Hour</th>
+                    <th>Maintenance Hour</th>
+                    <th>Warranty Hour</th>
+                    <th>Expenses Hour</th>
+                    <th></th>
+                    <th>Detail</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="detailMD" tabindex="-1" role="dialog" aria-labelledby="detailMD-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0000ff">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="detailMD-label" style="color:#fff">Detail</h4>
+
+
+            </div>
+            <br /><br />
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="input-group-btn">
+
+                            <button type="button" class="btn btn-primary" style="background:palevioletred;background-color:blue" #0000ff" onclick="GroupingDetail(null,null,'M')">Month</button>
+                            <button type="button" class="btn btn-primary" style="background:palevioletred;background-color:blue" onclick="GroupingDetail(null,null,'Y')">Year</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="" class="form-inline input-group dateform">
+                            <div class="form-group">
+                                <input type="text" class="form-control datepicker" placeholder="From" id="from" style="width:150px;">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control datepicker" placeholder="To" id="to" style="width:150px;">
+                            </div>
+                            <div class="input-group-btn form-group">
+                                <button onclick="getdate()" class="btn btn-primary btnmain" type="button" style="background-color:blue"><i class="fa fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br />
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="detailchart" style="height:400px"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="leavedetaillist" class="table table-bordered table-striped table-hover" width="75%">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Position</th>
+                                    <th>Leave Type</th>
+                                    <th>Leave Reason</th>
+                                    <th>From Date</th>
+                                    <th>To Date</th>
+                                    <th>Days</th>
+                                    <th>Supervisor Approve</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnmain" style="background-color:blue" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div class="modal fade slide-down" id="DeleteNoticeModel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="v-cell">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Confirm</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure want to delete?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="DelNotice()">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="noticeMD">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalHeaderSample">Add Daily Time Sheet</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <br />
+
+
+            <div class="modal-body" id="modalBodySample">
+
+                @using (Html.BeginForm("SendDailySheet", "DailySheet", FormMethod.Post, new { @id = "SOFORM" }))
+                {
+                    @Html.AntiForgeryToken()
+                   
+                    <div class="form-group">
+                        <label for="last_date">Date</label>
+                        <input type="date" name="date" class="form-control datepicker" placeholder="Choose Date" id="date" value="date" onchange="get_date(this.value);">
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Revenue Type</label>
+                        <select name="Revenuetype" class="form-control selectboxit" id="Revenue">
+                            <option value="">Choose Revenuetype Type</option>
+                            <option value="Actual working">Actual working</option>
+                            <option value="Traveling">Traveling</option>
+                            <option value="Overtime">Overtime</option>
+                            <option value="Preparation">Preparation</option>
+                            <option value="Spent">Spent</option>
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Revenue Description</label>
+                        <select name="Rdescription" class="form-control selectboxit" id="Rdescription">
+                            <option value="Cleaning">Cleaning</option>
+
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6" style="padding-left:0px">
+                            <label for="last_date">Revenue Hour</label>
+                            <input type="time" name="Rhour" class="form-control datepicker" placeholder="Choose Hour" id="Revenuehour" value="" onchange="get_date(this.value);">
+                        </div>
+                        <div class="col-md-6" style="padding-right:0px">
+                            <label for="last_date">Job Description</label>
+                            <input type="text" name="RJobNo" class="form-control" placeholder="Enter Job Number" id="RJobNo" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Maintenance Type</label>
+                        <select name="Maintenancetype" class="form-control selectboxit" id="Maintenance">
+                            <option value="">Choose Maintenance Type</option>
+                            <option value="Actual working">Actual working</option>
+                            <option value="Traveling">Traveling</option>
+                            <option value="Overtime">Overtime</option>
+                            <option value="Preparation">Preparation</option>
+                            <option value="Spent">Spent</option>
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Maintenance Description</label>
+                        <select name="Mdescription" class="form-control selectboxit" id="Mdescription">
+                            <option value="Cleaning">Cleaning</option>
+
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6" style="padding-left:0px">
+                            <label for="last_date">Maintenance Hour</label>
+                            <input type="time" name="Mhour" class="form-control datepicker" placeholder="Choose Hour" id="Maintenancehour" value="" onchange="get_date(this.value);">
+                        </div>
+                        <div class="col-md-6" style="padding-right:0px">
+                            <label for="last_date">Job Description</label>
+                            <input type="text" name="MJobNo" class="form-control" placeholder="Enter Job Number" id="MJobNo" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Warranty Type</label>
+                        <select name="Warrantytype" class="form-control selectboxit" id="Warrantytype">
+                            <option value="">Choose Warranty Type</option>
+                            <option value="Actual working">Actual working</option>
+                            <option value="Traveling">Traveling</option>
+                            <option value="Overtime">Overtime</option>
+                            <option value="Preparation">Preparation</option>
+                            <option value="Spent">Spent</option>
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Warranty Description</label>
+                        <select name="Wdescription" class="form-control selectboxit" id="Wdescription">
+                            <option value="Cleaning">Cleaning</option>
+
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6" style="padding-left:0px">
+                            <label for="last_date">Warranty Hour</label>
+                            <input type="time" name="Whour" class="form-control datepicker" placeholder="Choose Hour" id="Warrantyhour" value="" onchange="get_date(this.value);">
+                        </div>
+                        <div class="col-md-6" style="padding-right:0px">
+                            <label for="last_date">Job Description</label>
+                            <input type="text" name="WJobNo" class="form-control" placeholder="Enter Job Number" id="WJobNo" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Expense Type</label>
+                        <select name="Expensestype" class="form-control selectboxit" id="Expenses">
+                            <option value="">Choose Expense Type</option>
+                            <option value="Repair of Service Car">Repair of Service Car</option>
+                            <option value="Repair Service Tools">Repair Service Tools</option>
+                            <option value="Rework">Rework</option>
+                            <option value="Service Policy">Service Policy</option>
+                            <option value="Training">Training</option>
+                            <option value="Voluntary Visit">Voluntary Visit</option>
+                            <option value="Non Productive">Non Productive</option>
+                            <option value="Traveling">Traveling</option>
+                            <option value="Paper Works">Paper Works</option>
+                            <option value="Leave">Leave</option>
+                            <option value="Holiday">Holiday</option>
+                            <option value="Jobless">Jobless</option>
+
+                            <option value="Knowledge of service">Knowledge of service</option>
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Choose Expense Description</label>
+                        <select name="Edescritption" class="form-control selectboxit" id="Edescritption">
+                            <option value="Cleaning">Cleaning</option>
+
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6" style="padding-left:0px">
+                            <label for="last_date">Expense Hour</label>
+                            <input type="time" name="Ehour" class="form-control datepicker" placeholder="Choose Hour" id="Expenseshour" value="" onchange="get_date(this.value);">
+                        </div>
+                        <div class="col-md-6" style="padding-right:0px">
+                            <label for="last_date">Job Description</label>
+                            <input type="text" name="RJobNo" class="form-control" placeholder="Enter Job Number" id="EJobNo" value="" disabled>
+                        </div>
+                    </div>
+
+                    if (@ViewBag.Message != null)
+
+
+                    {
+
+                        <div class="col-md-2"></div>
+                        <div class="col-md-10">
+                            <span class="text-warning">@ViewBag.Message</span>
+                        </div>
+                    }
+
+                    <br />
+                    <br />
+                    <div class=" form-group text-center">
+                        <button class="btn btn-primary mt-2 w-50" style="" type="submit">Submit</button>
+                    </div>
+                   <input type="hidden" name="JobId" value="" id="JobId" />
+                    <input type="hidden" name="EmpId" value="@ViewBag.EmpId" id="EmpId" />
+                    <input type="hidden" name="Name" value="@ViewBag.Name" id="Name" />
+                    <input type="hidden" name="Position" value="@ViewBag.Position" id="Position" />
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/themekit/Moment.min.js"></script>
+    <script src="~/themekit/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+
+    <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
+    <script type="text/javascript">
+
+        var ID;
+        $(function () {
+            stafflist();
+        });
+        function GroupingDetail(fromdate, todate, key) {
+            fromdate = $('#from').val();
+            todate = $('#to').val();
+            var EmpId = id;
+            key = key;
+            //alert(key);
+            Detail(EmpId, fromdate, todate, key)
+        }
+
+        function stafflist() {
+            var SetData = $(".leavedetail tbody").empty();
+
+            if ($.fn.DataTable.isDataTable('.leavedetail')) {
+
+                $('.leavedetail').DataTable().clear().destroy();
+
+            }
+
+            $('.leavedetail').DataTable({
+
+                "ajax": {
+                    "url": "/DailySheet/dailyresult",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+
+                    { "data": "Name" },
+                    { "data": "Position" },
+                    {
+                        "data": "date", render: function (data, type, row) {
+                            if (type === "sort" || type === "type") {
+                                return data;
+                            }
+                            return moment(data).format("MM-DD-YYYY");
+                        }
+                    },
+                    { "data": "Revenuehour" },
+                    { "data": "Maintenancehour" },
+                    { "data": "Warrantyhour" },
+                    { "data": "Expenseshour" },
+                   
+                    
+                   
+                    { className: "hide", data: 'EmpId' },
+                    {
+
+                        "mRender": function (data, type, row) {
+                            return '<a href="@Url.Action("DetailData", "DailySheet")?JobId=' + row.JobId + '" class="editor_remove">Detail</a>'
+
+
+                        }
+                    },
+                    {
+
+                        "mRender": function (data, type, row) {
+                            return '<a href="#" class="editor_remove" onclick="Edit(' + row.JobId + ')">Edit</a>'
+
+
+                        }
+                    }
+
+                ]
+
+
+            });
+        }
+        function Edit(JobId) {
+           // alert(JobId);
+            $.ajax({
+                cache: false,
+                url: "@Url.Action("Detailsheet","DailySheet")",
+                data: { JobId: JobId },
+                beforeSend: function () {
+
+                },
+                success: function (result) {
+                    date = moment(result[0].date).format("YYYY-MM-DD");
+
+                    rhour = moment(result[0].Rhour).format("hh:mm");
+                    mhour = moment(result[0].Mhour).format("hh:mm");
+                    whour = moment(result[0].Whour).format("hh:mm");
+                    ehour = moment(result[0].Ehour).format("hh:mm");
+                    if (result[0].Wdescription != null) {
+                        a = (result[0].Wdescription).trim();
+                        $('#Wdescription').val(a);
+                    }
+                    else {
+                        $('#Wdescription').val(result[0].Wdescription);
+                    }
+                  
+                    
+                    $('#date').val(date);
+                    $('#Revenue').val(result[0].Revenuetype);
+                    $('#Rdescription').val(result[0].Rdescription);
+                    $('#Revenuehour').val(rhour);
+                    $('#RJobNo').val(result[0].RJobNo);
+                    $('#Maintenance').val(result[0].Maintenancetype);
+                    $('#Mdescription').val(result[0].Mdescription);
+                    $('#Maintenancehour').val(mhour);
+                    $('#MJobNo').val(result[0].MJobNo);
+                    $('#Warrantytype').val(result[0].Warrantytype);
+                    
+                    $('#Warrantyhour').val(whour);
+                    $('#WJobNo').val(result[0].WJobNo);
+                    $('#Expenses').val(result[0].Expensestype);
+                    $('#Edescritption').val(result[0].Edescritption);
+                    $('#Expenseshour').val(ehour);
+                    $('#JobId').val(result[0].JobId);
+                    $('#EmpId').val(result[0].EmpId);
+                },
+                complete: function () {
+                    $('#noticeMD').modal('show');
+                }
+            });
+        }
+        function Detail(EmpId) {
+
+           
+            var chartdata;
+          
+        }
+
+
+        function InsertLeave() {
+
+            $('#noticeMD').modal('show');
+        }
+
+
+        
+    </script>
+}

@@ -1,0 +1,43 @@
+﻿@model myanmarkido.Models.Account
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Detail Information For @Model.Name</h2>
+    
+
+    <table style="width:35%">
+        <tr>
+            <th>Name</th>
+             <th>@Model.Name</th>
+        </tr>
+        <tr>
+            <th>Position</th>
+           <th>@Model.Position</th>
+        </tr>
+        <tr>
+            <th>UserName</th>
+            <th>@Model.UserName</th>
+        </tr>
+        <tr>
+            <th>Password</th>
+            <th>@Model.Password</th>
+        </tr>
+    </table>
+
+ 
+
+</body>
+</html>

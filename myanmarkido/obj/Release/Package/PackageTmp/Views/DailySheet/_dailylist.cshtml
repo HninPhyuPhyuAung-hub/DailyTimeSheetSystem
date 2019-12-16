@@ -1,0 +1,120 @@
+﻿@model myanmarkido.Models.ModelPaging<myanmarkido.Models.performanace>
+@using PagedList;
+@using PagedList.Mvc;
+
+<br />
+<head>
+    <style>
+        #table-scroll {
+            height: 150px;
+            overflow: auto;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<div class="panel panel-default">
+    <div id="table-scroll">
+        <table id="myTable" table style="text-align:center;width:250%;height:90px;overflow-x:scroll">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="text-align:center;color:blue">Name</th>
+                    <th rowspan="2" style="text-align:center;color:blue">Position</th>
+                    <th colspan="5" style="text-align:center;color:blue">Revenue(R1~5)</th>
+                    <th colspan="5" style="text-align:center;color:blue">Maintenance(M1~5)</th>
+                    <th colspan="5" style="text-align:center;color:blue">Warranty(D1~5)</th>
+                    <th colspan="13" style="text-align:center;color:blue">Expenses (E)</th>
+                    <th rowspan="2" style="text-align:center;color:blue">Total</th>
+                    <th rowspan="2" style="text-align:center;color:blue">Detail</th>
+                </tr>
+                <tr>
+                    <th>Actual working hr</th>
+                    <th>Traveling hr</th>
+                    <th>Overtime</th>
+                    <th>Preparation</th>
+                    <th>Spent hr</th>
+                    <th>Actual working hr</th>
+                    <th>Traveling hr</th>
+                    <th>Overtime</th>
+                    <th>Preparation</th>
+                    <th>Spent hr</th>
+                    <th>Actual working hr</th>
+                    <th>Traveling hr</th>
+                    <th>Overtime</th>
+                    <th>Preparation</th>
+                    <th>Spent hr</th>
+                    <th>Repair of Service Car(E01)</th>
+                    <th>Repair Service Tools(E02)</th>
+                    <th>Rework(E03)</th>
+                    <th>Service Policy(E04)</th>
+                    <th>Training(E05)</th>
+                    <th>Voluntary Visit(E06)</th>
+                    <th>Non Productive(E07)</th>
+                    <th>Traveling(E08)</th>
+                    <th>Paper Works(E09)</th>
+                    <th>Leave(E10)</th>
+                    <th>Holiday(E11)</th>
+                    <th>Jobless(E12)</th>
+                    <th>Knowledge of service(E13)</th>
+                   
+                </tr>
+
+            </thead>
+            <tbody id="responsive-table-body">
+                @foreach (var item in Model.Results)
+                {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Position</td>
+
+                    <td>@item.RAHour</td>
+                    <td>@item.RTHour</td>
+                    <td>@item.ROHour</td>
+                    <td>@item.RPHour</td>
+                    <td>@item.RSHour</td>
+
+                    <td>@item.MAHour</td>
+                    <td>@item.MTHour</td>
+                    <td>@item.MOHour</td>
+                    <td>@item.MPHour</td>
+                    <td>@item.MSHour</td>
+
+                    <td>@item.WAHour</td>
+                    <td>@item.WTHour</td>
+                    <td>@item.WOHour</td>
+                    <td>@item.WPHour</td>
+                    <td>@item.WSHour</td>
+
+                    <td>@item.ECHour</td>
+                    <td>@item.ETOHour</td>
+                    <td>@item.ERHour</td>
+                    <td>@item.EPHour</td>
+                    <td>@item.ETRHour</td>
+                    <td>@item.EVHour</td>
+                    <td>@item.ENHour</td>
+                    <td>@item.ETHour</td>
+                    <td>@item.EPWHour</td>
+                    <td>@item.ELHour</td>
+                    <td>@item.EHHour</td>
+                    <td>@item.EJHour</td>
+                    <td>@item.EKHour</td>
+
+                    <td>@item.Total</td>
+             <td>       <button type="button" class="btn btn-sm btnmain text-white" style="background-color:blue;border-color:blue" data-position="@item.Position" data-name="@item.Name" onclick="DetailList(this)" title="Detail">Detail</button></td>
+                </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer padding-none text-center">
+        <div class="">
+            <div class="pagedList" style="text-align:center">
+                @Html.PagedListPager(Model.Results, page => Url.Action("_dailylist", "DailySheet",
+                 new { page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+            </div>
+        </div>
+    </div>
+    </div>

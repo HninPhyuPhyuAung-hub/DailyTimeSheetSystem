@@ -1,0 +1,109 @@
+﻿@model IList<myanmarkido.Models.dailyjob>
+@{
+    ViewBag.Title = "Detailsheet";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+@foreach (var item in Model)
+{
+
+
+    <body>
+       <br />
+        <br />
+       
+        <table style="width:50%">
+            <tr>
+                <td>Date</td>
+                <td>@item.date</td>
+            </tr>
+            <tr>
+                <td>Revenue Type</td>
+                <td>@item.Revenuetype</td>
+            </tr>
+            <tr>
+                <td>Revenue Description</td>
+                <td>@item.Rdescription</td>
+            </tr>
+            <tr>
+                <td>Revenue Hour</td>
+                <td>@item.Revenuehour</td>
+
+            </tr>
+            <tr>
+                <td>Revenue JobNumber</td>
+                <td>@item.RJobNo</td>
+
+            </tr>
+
+            <tr>
+                <td>Maintenance Type</td>
+                <td>@item.Maintenancetype</td>
+            </tr>
+            <tr>
+                <td>Maintenance Description</td>
+                <td>@item.Mdescription</td>
+            </tr>
+            <tr>
+                <td>Maintenance Hour</td>
+                <td>@item.Maintenancehour</td>
+
+            </tr>
+            <tr>
+                <td>Maintenance JobNumber</td>
+                <td>@item.MJobNo</td>
+
+            </tr>
+
+            <tr>
+                <td>Warranty Type</td>
+                <td>@item.Warrantytype</td>
+            </tr>
+            <tr>
+                <td>Warranty Description</td>
+                <td>@item.Wdescription</td>
+            </tr>
+            <tr>
+                <td>Warranty Hour</td>
+                <td>@item.Warrantyhour</td>
+
+            </tr>
+            <tr>
+                <td>Warranty JobNumber</td>
+                <td>@item.WJobNo</td>
+
+            </tr>
+
+            <tr>
+                <td>Expenses Type</td>
+                <td>@item.Expensestype</td>
+            </tr>
+            <tr>
+                <td>Expenses Description</td>
+                <td>@item.Edescritption</td>
+            </tr>
+            <tr>
+                <td>Expenses Hour</td>
+                <td>@item.Expenseshour</td>
+
+            </tr>
+            
+        </table>
+
+    </body>
+
+
+}</html>

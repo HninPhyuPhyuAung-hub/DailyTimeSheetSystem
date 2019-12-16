@@ -1,0 +1,367 @@
+﻿@model myanmarkido.Models.dailyjob
+@{
+    ViewBag.page = "Referral";
+}
+@section css{
+    <link href="~/themekit/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/assets/css/icons/fontawesome/styles.min.css" rel="stylesheet" />
+    <link href="~/Content/custom.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-2">
+            <span class="text-uppercase text-muted">Daily</span><br />
+            <span class="text-bold">Time Sheet</span>
+        </div>
+        <div class="col-md-3">
+           
+        </div>
+        <div class="col-md-7">
+            <form action="" class="form-inline input-group dateform">
+                <div class="form-group">
+                    <input type="text" class="form-control datepicker" placeholder=@DateTime.UtcNow.AddDays(-14) id="fromdate">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control datepicker" placeholder=@DateTime.UtcNow id="todate">
+                </div>
+                <div class="input-group-btn form-group">
+                    <button onclick="getDataByDate()" class="btn btn-primary btnmain" type="button"><i class="fa fa-search"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="custom-card">
+
+    <h2>
+        Daily Time Sheet
+    </h2>
+    <div class="row">
+        <div class="col-md-5">
+
+
+            <input type="submit" class="btn btn-primary btn-sm btn-rounded btnmain" style="background:palevioletred;background-color:blue;border-color:black" value="Download CSV" id="btnExportToExcel" />
+
+
+            @*<a type="button" class="btn btn-primary btn-sm btn-rounded btnmain" href="@Url.Action("DownLine","Referral")">Downline</a>*@
+        </div>
+    </div>
+ 
+    <div class="row">
+        <div class="col-md-9 col-lg-offset-4">
+            <div class="col-md-6"></div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input id="keyword" type="text" class="form-control" placeholder="Search with Employee Name or Position" style="width: 327px">
+
+                </div>
+            </div>
+            
+            <div class="col-md-2">
+            
+                        <button onclick="search()" class="btn btn-primary btnmain" type="button"><i class="fa fa-search"></i></button>
+                 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="custom-card">
+    <div class="MainListC">
+        <div id="MainListR"></div>
+    </div>
+</div>
+<div class="modal fade slide-left" id="AppMM" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog sidebar sidebar-size-70pc sidebar-size-xs-1 sidebar-offset-0 left">
+        <div class="">
+            <div class="modal-content">
+                <div class="mainMM">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="shopownerMD" tabindex="-1" role="dialog" aria-labelledby="myModal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="bindshop"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detailMD" tabindex="-1" role="dialog" aria-labelledby="detailMD-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:blue">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="detailMD-label" style="color:#fff">Detail</h4>
+
+
+            </div>
+            <br /><br />
+            @*<div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-primary" style="background:palevioletred" onclick="GroupingDetail(phoneno,null,null,'D')">Day</button>
+                            <button type="button" class="btn btn-primary" style="background:palevioletred" onclick="GroupingDetail(phoneno,null,null,'M')">Month</button>
+                            <button type="button" class="btn btn-primary" style="background:palevioletred" onclick="GroupingDetail(phoneno,null,null,'Y')">Year</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="" class="form-inline input-group dateform">
+                            <div class="form-group">
+                                <input type="text" class="form-control datepicker" placeholder="From" id="from" style="width:150px;">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control datepicker" placeholder="To" id="to" style="width:150px;">
+                            </div>
+                            <div class="input-group-btn form-group">
+                                <button onclick="getdate()" class="btn btn-primary btnmain" type="button"><i class="fa fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>*@
+            <div class="modal-body">
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="referraldetail" class="table table-bordered table-striped table-hover" width="50%">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>RType</th>
+                                    <th>RDes</th>
+                                    <th>RHour</th>
+                                    <th>RJob</th>
+                                    <th>MType</th>
+                                    <th>MDes</th>
+                                    <th>MHour</th>
+                                    <th>MJob</th>
+                                    <th>WType</th>
+                                    <th>WDes</th>
+                                    <th>WHour</th>
+                                    <th>WJob</th>
+                                    <th>EType</th>
+                                    <th>EDes</th>
+                                    <th>EHour</th>
+                                  
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnmain" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</div>
+
+@section scripts{
+    <script src="~/themekit/Moment.min.js"></script>
+    <script src="~/themekit/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+    <script src="~/Scripts/jquery.autocomplete.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
+
+    <script type="text/javascript">
+        var table;
+        var q;
+        var p;
+        var n = "n";
+        var lessontype;
+        var lesson;
+        var stafflist;
+        var fromdate;
+        var todate;
+        var position;
+        var name;
+        var phoneno;
+        var detaildata;
+        var detailnum;
+        var Data;
+        $(function () {
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var currentDate = date.getDate();
+            var currentYear = date.getFullYear();
+            $('.datepicker').datetimepicker({
+                format: 'DD-MMM-YYYY'
+
+            });
+           
+            ShowList('@Url.Action("_dailylist", "DailySheet")', "#MainListR");
+            $(".MainListC").on("click", ".pagedList a", function (e) {
+                e.preventDefault();
+                var $a = $(this).attr("href");
+                if ($a != null) {
+                    ShowList($a, "#MainListR");
+                }
+            });
+           
+            
+        });
+
+        
+           function getdate() {
+            fromdate = $('#from').val();
+            todate = $('#to').val();
+            var phonenumber = phoneno;
+            //alert(phonenumber);
+            DownlineDataByDate(phonenumber, fromdate, todate)
+        }
+
+
+     
+
+        function getDataByDate() {
+            fromdate = $('#fromdate').val();
+            todate = $('#todate').val();
+           
+            ShowList('@Url.Action("_dailylist", "DailySheet")', "#MainListR");
+           
+        }
+
+     function search() {
+            // $('.sdd3').removeClass('hidden');
+            q = $('#keyword').val();
+          
+           
+            n = "y";
+            // getSearchChartData(q);
+            ShowList('@Url.Action("_dailylist", "DailySheet")', "#MainListR");
+            n = "n";
+        }
+
+
+        function DetailList(e, key) {
+            var detaildata;
+            var SetData = $("#referraldetail tbody").empty();
+            position = $(e).attr('data-position');
+            name = $(e).attr('data-name');
+            
+             
+            if ($.fn.DataTable.isDataTable('#referraldetail')) {
+
+                $('#referraldetail').DataTable().clear().destroy();
+                fromdate = null;
+                todate = null;
+            }
+     
+
+       
+                    $.ajax({
+                        type: "GET",
+                        cache: false,
+                        url: '@Url.Action("_Detail", "DailySheet")',
+                        data: { position: position, name:name, fromdate: fromdate, todate: todate },
+
+                        success: function (result) {
+
+                            detaildata = jQuery.parseJSON(JSON.stringify(result));
+
+                            detailnum = detaildata.Warrantyhour.length;
+                            //alert(detailnum)
+                            //console.log(detaildata.ReferralPhoneNumber.length);
+                            $('#detailMD').modal('show');
+
+                            for (var i = 0; i < detailnum; i++) {
+                                //console.log(detaildata.ReferralPhoneNumber[i] + detaildata.UserPhoneNumber[i] + detaildata.ReferDate[i]);
+                                Data = "<tr>" +
+                                    "<td>" + detaildata.date[i] + "</td>" +
+
+                                    "<td>" + detaildata.Revenuetye[i] + "</td>" +
+                                    "<td>" + detaildata.Rdescription[i] + "</td>" +
+                                    "<td>" + detaildata.Revenuehour[i] + "</td>" +
+                                    "<td>" + detaildata.RJobNo[i] + "</td>" +
+                                    "<td>" + detaildata.Maintenancetype[i] + "</td>" +
+                                    "<td>" + detaildata.Mdescription[i] + "</td>" +
+                                    "<td>" + detaildata.Maintenancehour[i] + "</td>" +
+                                    "<td>" + detaildata.MJobNo[i] + "</td>" +
+                                    "<td>" + detaildata.Warrantytype[i] + "</td>" +
+                                    "<td>" + detaildata.Wdescription[i] + "</td>" +
+                                    "<td>" + detaildata.Warrantyhour[i] + "</td>" +
+                                    "<td>" + detaildata.WJobNo[i] + "</td>" +
+                                    "<td>" + detaildata.Expensetype[i] + "</td>" +
+                                    "<td>" + detaildata.Edescription[i] + "</td>" +
+                                    "<td>" + detaildata.Expensehour[i] + "</td>" +
+                                   
+                                    "</tr>";
+
+                                SetData.append(Data);
+                            }
+
+                                table = $("#referraldetail").DataTable({
+                                    "ordering": true,
+                                    
+                                    retrieve: true,
+                                    destroy: true,
+                                    paging: true,
+                                    info: true,
+
+                                });
+
+                            $('.dataTables_scroll').width('800px');
+                        },
+                        complete: function () {
+
+                        }
+
+                    });
+
+                }
+            
+
+        function ShowList(action, div) {
+            $.ajax({
+                cache: false,
+                url: action,
+                data: { n: n, Keyword: q, fromdate: fromdate, todate: todate },
+                beforeSend: function () {
+                    $(div).empty().append('<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div> <h5 class="text-center">Loading...</h5>');
+                },
+                success: function (myData) {
+                    $(div).empty().append(myData);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+        $(document).ready(function () {
+           
+            fromdate = $('#fromdate').val();
+            todate = $('#todate').val();
+            keyword = $('#keyword').val();
+           
+                $('#btnExportToExcel').click(function () {
+                    window.location.href = "@Url.Action("ExportListToExcel", "DailySheet")?fromdate="
+                        + fromdate + "&todate=" + todate + "&keyword=" + keyword;
+            });
+          
+             
+        });
+    </script>
+}
