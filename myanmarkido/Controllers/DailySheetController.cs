@@ -1,6 +1,5 @@
 ﻿using myanmarkido.Models;
 using myanmarkido.Repository;
-
 using PagedList;
 using System;
 using System.Collections.Generic;
@@ -30,12 +29,10 @@ namespace myanmarkido.Controllers
                 mc.Role = Request.Cookies["dailyCookie"]["Role"];
                 mc.Name = Request.Cookies["dailyCookie"]["UserName"];
                 mc.Positon = Request.Cookies["dailyCookie"]["Position"];
-
             }
-
-
             return mc;
         }
+
         public ActionResult Index()
         {
             return View();
@@ -48,8 +45,8 @@ namespace myanmarkido.Controllers
             ViewBag.Name = mc.Name;
             ViewBag.Position = mc.Positon;
             return View();
-
         }
+
         public ActionResult dailyresult()
         {
             MemberCookie mc = Getmember();
@@ -57,13 +54,12 @@ namespace myanmarkido.Controllers
             var result = context.Dailyjobset.Where(a => a.EmpId == mc.MemberID).ToList();
             return Json(new { data = result }, JsonRequestBehavior.AllowGet);
         }
+
         public ActionResult SendDailySheet(dailyjob job)
         {
-
             dailysheetcontext context = new dailysheetcontext();
             dailyjobRepository dailyrepo = new dailyjobRepository();
-            dailyjob updatejob = null;
-            
+            dailyjob updatejob = null;        
             if (job.JobId == 0)
             {
                 var Rhour = Convert.ToDouble((job.Rhour.Hours)+(job.Rhour.Minutes) / 60.0);
@@ -88,27 +84,28 @@ namespace myanmarkido.Controllers
                 job.Maintenancehour = Math.Round(Mhour, 2);
                 updatejob = dailyrepo.Update(job);
             }
-
             return RedirectToAction("AddDailySheet", "DailySheet");
         }
+
         public ActionResult Detailsheet(int? JobId)
         {
             dailysheetcontext context = new dailysheetcontext();
             var result = context.Dailyjobset.Where(a => a.JobId == JobId).ToList();
-
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
         public ActionResult DetailData(int? JobId)
         {
             dailysheetcontext context = new dailysheetcontext();
             var result = context.Dailyjobset.Where(a => a.JobId == JobId).ToList();
-
             return View(result);
         }
+
         public ActionResult AdminJob()
         {
             return View();
         }
+
         public ActionResult EmployeeList(int page = 1, int pagesize = 10)
         {
             dailysheetcontext context = new dailysheetcontext();
@@ -122,23 +119,22 @@ namespace myanmarkido.Controllers
             model.TotalPages = totalpage;
             return View(model);
         }
+
         public ActionResult Detail(int EmpId)
         {
             dailysheetcontext context = new dailysheetcontext();
             var result = context.Accountset.Where(e => e.EmpId == EmpId).FirstOrDefault();
             return View(result);
         }
+
         public ActionResult _dailylist(string n = "n", string Keyword = null, DateTime? fromdate = null, DateTime? todate = null, int page = 1, int pageSize = 10)
         {
             fromdate=(fromdate==null)? new DateTime(1800, 1, 1) : fromdate;
-            todate = (todate == null) ? DateTime.UtcNow : todate;
-
-            
+            todate = (todate == null) ? DateTime.UtcNow : todate;         
             if (Keyword == null)
             {
                 Keyword = "";
-            }
-            
+            }    
             var param1 = new SqlParameter();
             param1.ParameterName = "@S";
             param1.SqlDbType = SqlDbType.DateTime;
@@ -153,20 +149,12 @@ namespace myanmarkido.Controllers
             param3.ParameterName = "@K";
             param3.SqlDbType = SqlDbType.VarChar;
             param3.SqlValue = Keyword;
-
-          
-
-           
+ 
             using (dailysheetcontext context = new dailysheetcontext())
-            {
-                
+            {     
                 IEnumerable <performanace> data = context.Database.SqlQuery<performanace>("DetailList @S,@E,@K", param1, param2, param3).ToList();
-
-               
-               
                 var totalCount = data.Count();
                 var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
                 var results = data.Skip(pageSize * (page - 1))
                                  .Take(pageSize);
                 Model<performanace> model = new Model<performanace>()
@@ -180,26 +168,18 @@ namespace myanmarkido.Controllers
                 result.Results = pagedList;
                 result.TotalCount = model.TotalCount;
                 result.TotalPages = model.TotalPages;
-
-
                 return PartialView("_dailylist", result);
-
             }
-
-
         }
 
         public ActionResult ExportListToExcel(DateTime? fromdate, DateTime? todate, string keyword = null)
         {
-
             fromdate = (fromdate == null) ? new DateTime(1970, 1, 1) : fromdate;
             todate = (todate == null) ? DateTime.UtcNow : todate;
-
             if (keyword == null)
             {
                 keyword = "";
             }
-
             var param1 = new SqlParameter();
             param1.ParameterName = "@S";
             param1.SqlDbType = SqlDbType.DateTime;
@@ -215,14 +195,8 @@ namespace myanmarkido.Controllers
             param3.SqlDbType = SqlDbType.VarChar;
             param3.SqlValue = keyword;
 
-
-
-
             dailysheetcontext context = new dailysheetcontext();
-
-
             IEnumerable<performanace> data = context.Database.SqlQuery<performanace>("DetailList @S,@E,@K", param1, param2, param3).ToList();
-
             //    GridView gv = new GridView();
 
             //gv.DataSource = data;
@@ -240,7 +214,6 @@ namespace myanmarkido.Controllers
             //Response.Output.Write(sw.ToString());
             //Response.Flush();
             //Response.End();
-
 
             ExcelPackage Ep = new ExcelPackage();
             ExcelWorksheet Sheet = Ep.Workbook.Worksheets.Add("Report");
@@ -328,33 +301,22 @@ namespace myanmarkido.Controllers
 
                 row++;
             }
-
-
             Sheet.Cells["A:AZ"].AutoFitColumns();
             Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             Response.AddHeader("content-disposition", "attachment;  filename=Report.xlsx");
             Response.BinaryWrite(Ep.GetAsByteArray());
             Response.End();
-
-
-            return RedirectToAction("AdminJob", "DailySheet");
-            
+            return RedirectToAction("AdminJob", "DailySheet");          
         }
    
-       
-      
         public ActionResult _Detail(string position,string name, DateTime? fromdate, DateTime? todate)
         {
             MemberCookie pc = Getmember();
             fromdate = (fromdate == null) ? new DateTime(1970, 1, 1) : fromdate;
             todate = (todate == null) ? DateTime.UtcNow : todate;
-            dailysheetcontext context = new dailysheetcontext();
-          
+            dailysheetcontext context = new dailysheetcontext();   
             IEnumerable<dailyjob> result = context.Dailyjobset.Where(a => a.Position == position && a.Name == name && a.date >= fromdate && a.date <= todate).OrderByDescending(a => a.date).ToList();
-            
-
             Detailjson data = new Detailjson();
-
             data.date = result.Select(e => e.date.Value.ToString("MMMM dd/ yyyy")).ToArray();
             data.Revenuetye = result.Select(e => e.Revenuetype).ToArray();
             data.Rdescription = result.Select(e => e.Rdescription).ToArray();
@@ -371,25 +333,19 @@ namespace myanmarkido.Controllers
             data.Expensetype = result.Select(e => e.Expensestype).ToArray();
             data.Edescription = result.Select(e => e.Edescritption).ToArray();
             data.Expensehour = result.Select(e => e.Expenseshour).ToArray();
-           
-
             ViewBag.position = position;
             ViewBag.name = name;
             return Json(data, JsonRequestBehavior.AllowGet);
-
         }
+
         public ActionResult DeleteEmployee(int EmpId)
         {
             using (dailysheetcontext context = new dailysheetcontext())
             {
-                var sqlquery = String.Format("Delete Account WHERE EmpId={0}", EmpId);
-              
+                var sqlquery = String.Format("Delete Account WHERE EmpId={0}", EmpId);    
                 context.Database.ExecuteSqlCommand(sqlquery);
-               
-            }
-            
+            }        
             return Json("Success", JsonRequestBehavior.AllowGet);
-
         }
     }
 }

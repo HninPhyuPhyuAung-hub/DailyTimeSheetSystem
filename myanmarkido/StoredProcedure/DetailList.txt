@@ -13,33 +13,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 CREATE   PROCEDURE [dbo].[DetailList] 
  @S date,
  @E date,
@@ -57,8 +30,6 @@ DECLARE @EndDate date;
 SELECT @EndDate = @E;
 DECLARE @Keyword varchar(50);
 SELECT @Keyword =@K;
-
-
 
 IF (@Keyword is not null)
 
@@ -103,19 +74,13 @@ d.Position,
 (CASE WHEN d.Expensestype='Jobless' THEN SUM(d.Expenseshour) END )AS EJHour,
 (CASE WHEN d.Expensestype='Knowledge of service' THEN SUM(d.Expenseshour) END )AS EKHour,
 
-
 CONVERT(date,d.date) AS date
 
-FROM            dbo.dailyjob AS d 
+FROM             dbo.dailyjob AS d 
 WHERE         	 CONVERT(date,d.date) >= @StartDate AND CONVERT(date,d.date)<= @EndDate 
-
-GROUP BY    d.Name,d.Position,d.Revenuetype,CONVERT(date,d.date),d.Maintenancetype,d.Warrantytype,d.Expensestype
-
-
-
-
-
+GROUP BY         d.Name,d.Position,d.Revenuetype,CONVERT(date,d.date),d.Maintenancetype,d.Warrantytype,d.Expensestype
 )
+
 SELECT    Name,Position,DATEFROMPARTS(Year(date),Month(date),01) AS Date,
 SUM(isnull(first.RAHour,0)) AS RAHour,SUM(isnull(first.ROHour,0)) AS ROHour,SUM(isnull(first.RPHour,0))AS RPHour ,
 SUM(isnull(first.RTHour,0)) AS RTHour,SUM(isnull(first.RSHour,0))AS RSHour,SUM(isnull(first.MAHour,0))AS MAHour,SUM(isnull(first.MOHour,0))AS MOHour,SUM(isnull(first.MPHour,0))AS MPHour,SUM(isnull(first.MTHour,0))AS MTHour,SUM(isnull(first.MSHour,0)) AS MSHour,
@@ -130,24 +95,14 @@ isnull(first.WPHour,0)+isnull(first.WTHour,0)+isnull(first.WSHour,0)+isnull(firs
 isnull(first.ENHour,0)+isnull(first.EPHour,0)+isnull(first.EPWHour,0)+isnull(first.ETOHour,0)+isnull(first.ERHour,0)+isnull(first.ETRHour,0)+isnull(first.EVHour,0)
 +isnull(first.ETHour,0)
 ) AS Total
-  FROM         first
-    WHERE        (first.Name like '%' + @Keyword + '%')  OR  (first.Position like '%' + @Keyword + '%')  
-	GROUP BY	 Name,Position,DATEFROMPARTS(Year(date),Month(date),01)
+
+     FROM         first
+     WHERE        (first.Name like '%' + @Keyword + '%')  OR  (first.Position like '%' + @Keyword + '%')  
+     GROUP BY	 Name,Position,DATEFROMPARTS(Year(date),Month(date),01)
 
 END
 
 END
-
-
-
-
-
-
-
-
-
-
-
 
 
 GO
