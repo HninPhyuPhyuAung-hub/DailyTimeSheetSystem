@@ -1,0 +1,18 @@
+# Example terraform.tfvars file
+# Copy this file to terraform.tfvars and customize the values
+
+# Project configuration
+project_name = "multi-region-vpc"
+environment  = "production"
+
+# NAT Gateway configuration
+# Set to false to disable NAT Gateway and reduce costs
+enable_nat_gateway = true
+
+# VPN Gateway configuration
+# Set to true if you need VPN connectivity
+enable_vpn_gateway = false
+
+# Route53 Domain (optional)
+# Uncomment and set your domain name to enable Route53 geolocation routing
+# domain_name = "example.com"
